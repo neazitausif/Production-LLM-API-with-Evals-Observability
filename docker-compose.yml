@@ -1,0 +1,37 @@
+services:
+
+  api:
+    build: .
+    container_name: tax-rag-api
+    ports:
+      - "8000:8000"
+    environment:
+      CHROMA_HOST: chroma
+      OLLAMA_BASE_URL: http://ollama:11434
+      MODEL_NAME: qwen2.5:1.5b
+      LOG_FILE: /app/logs/request_logs.jsonl
+    depends_on:
+      - chroma
+      - ollama
+    volumes:
+      - ./logs:/app/logs
+
+  chroma:
+    image: chromadb/chroma:latest
+    container_name: tax-rag-chroma
+    ports:
+      - "8001:8000"
+    volumes:
+      - chroma_data:/data
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: tax-rag-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+
+volumes:
+  chroma_data:
+  ollama_data:
